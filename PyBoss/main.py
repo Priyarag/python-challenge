@@ -6,21 +6,24 @@ import re
 employee_csv = os.path.join("..","PyBoss", "employee_data.csv")
 employee_data = pd.read_csv(employee_csv)
 # new data frame with split value columns 
+#using split function to look by space between strings
 new_cols_name = employee_data["Name"].str.split(" ", n = 1, expand = True) 
 # making seperate first name column from new data frame 
 employee_data["First Name"]= new_cols_name[0] 
-  
 # making seperate last name column from new data frame 
 employee_data["Last Name"]= new_cols_name[1] 
-  
 # Dropping old Name columns 
 employee_data.drop(columns =["Name"], inplace = True) 
-  
 # df display 
 #print(employee_data )
+#convert the string to datetime
 employee_data['DOB'] = pd.to_datetime(employee_data['DOB'])
+#convert the DOB column to MM/DD/YYYY format
 employee_data['DOB'] = employee_data['DOB'].dt.strftime('%m/%d/%Y')
+#print(employee_data['DOB'])
+#Replace the SSN to mask the first 5 characters
 employee_data['SSN'] =  employee_data['SSN'].replace(r'\d\d\d-\d\d-', value='***-**-',regex=True) 
+#Store the State abbreviations to the us_state_abbrev dictionary
 us_state_abbrev = {
     'Alabama': 'AL',
     'Alaska': 'AK',
@@ -73,6 +76,9 @@ us_state_abbrev = {
     'Wisconsin': 'WI',
     'Wyoming': 'WY',
 }
+#Replace the state name to abbreviations using the dict value
 employee_data['State'].replace(us_state_abbrev, inplace=True)
+#Organize the dataframe 
 organized_data = employee_data[["Emp ID","First Name","Last Name","DOB","SSN","State"]]
+#Store the organized data to a xlsx
 organized_data.to_csv("OrganizedEmpData.csv", index=False, header=True)
